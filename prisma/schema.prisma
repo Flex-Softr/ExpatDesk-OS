@@ -7,15 +7,156 @@ generator client {
 
 datasource db {
   provider = "mongodb"
+  url      = env("DATABASE_URL")
 }
 
-model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  email     String   @unique
-  name      String?
-  role      String   @default("USER")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+enum Role {
+  ADMIN
+  STAFF
+}
 
-  @@map("users")
+enum LeadStatus {
+  NEW
+  CONTACTED
+  IN_PROGRESS
+  DOCS_PENDING
+  SERVICE_COMPLETED
+  CANCELLED
+}
+
+enum ModuleFileType {
+  LOCAL_FILE
+  DRIVE_LINK
+}
+
+model Category {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  slug      String    @unique
+  nameEn    String
+  nameIt    String
+  services  Service[]
+  createdAt DateTime  @default(now())
+
+  @@map("categories")
+}
+
+model Service {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  slug        String   @unique
+  categoryId  String   @db.ObjectId
+  category    Category @relation(fields: [categoryId], references: [id])
+  titleEn     String
+  titleIt     String
+  shortDescEn String
+  shortDescIt String
+  bodyEn      String
+  bodyIt      String
+  coverImage  String?
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("services")
+}
+
+model News {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  slug        String   @unique
+  titleEn     String
+  titleIt     String
+  bodyEn      String
+  bodyIt      String
+  coverImage  String?
+  publishedAt DateTime @default(now())
+  isPublished Boolean  @default(true)
+
+  @@map("news")
+}
+
+model BlogPost {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  slug        String   @unique
+  titleEn     String
+  titleIt     String
+  bodyEn      String
+  bodyIt      String
+  coverImage  String?
+  tags        String[]
+  publishedAt DateTime @default(now())
+  isPublished Boolean  @default(true)
+
+  @@map("blog_posts")
+}
+
+model Lead {
+  id               String     @id @default(auto()) @map("_id") @db.ObjectId
+  serviceSlug      String?
+  serviceName      String?
+  name             String
+  email            String
+  phone            String?
+  preferredLang    String?
+  message          String
+  status           LeadStatus @default(NEW)
+  assignedToId     String?    @db.ObjectId
+  notes            String?
+  emailNotified    Boolean    @default(false)
+  whatsappNotified Boolean    @default(false)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  @@map("leads")
+}
+
+model AdminUser {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  email        String    @unique
+  passwordHash String
+  name         String
+  role         Role      @default(STAFF)
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  sessions     Session[]
+
+  @@map("admin_users")
+}
+
+model Session {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String    @db.ObjectId
+  user      AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+
+  @@map("sessions")
+}
+
+model Module {
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String?
+  type        ModuleFileType
+  filePath    String?
+  driveUrl    String?
+  category    String?
+  order       Int            @default(0)
+  isActive    Boolean        @default(true)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@map("modules")
+}
+
+model DockLink {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  url         String
+  description String?
+  category    String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@map("dock_links")
 }
