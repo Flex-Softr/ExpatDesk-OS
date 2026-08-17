@@ -18,7 +18,7 @@ const eslintConfig = defineConfig([
       "no-alert": "error",
       "no-var": "error",
       "prefer-const": "error",
-      "eqeqeq": ["error", "always", { null: "ignore" }],
+      eqeqeq: ["error", "always", { null: "ignore" }],
       "no-duplicate-imports": "error",
       "no-eval": "error",
       "no-implied-eval": "error",
@@ -49,13 +49,7 @@ const eslintConfig = defineConfig([
     },
   },
   // Override default ignores of eslint-config-next.
-  globalIgnores([
-    ".next/**",
-    "out/**",
-    "build/**",
-    "next-env.d.ts",
-    "node_modules/**",
-  ]),
+  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts", "node_modules/**"]),
 ]);
 
 export default eslintConfig;
