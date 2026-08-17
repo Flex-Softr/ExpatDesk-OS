@@ -19,7 +19,7 @@ export async function GET() {
       orderBy: { nameEn: "asc" },
       include: {
         _count: {
-          select: { services: { where: { isActive: true } } },
+          select: { services: true },
         },
       },
     });
