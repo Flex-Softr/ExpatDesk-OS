@@ -6,3 +6,8 @@ dist
 node_modules
 package-lock.json
 public
+.agents
+.windsurf
+.claude
+skills-lock.json
+
